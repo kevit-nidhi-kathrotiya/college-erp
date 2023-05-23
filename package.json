@@ -1,0 +1,47 @@
+{
+  "name": "college-erp-poc",
+  "version": "1.0.0",
+  "type": "module",
+  "description": "- Save Staffs and Students Data. - There is one admin who can access anyone data - staff can access only students data - there are 4 models as below :         - users     : to save staff and admin data         - students  : to save student data         - attendences : to save dat wise attendence of studentds         - batches   : to save year wise department's data",
+  "main": "index.js",
+  "scripts": {
+    "start": "nodemon src/server.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "bcrypt": "^5.1.0",
+    "bcryptjs": "2.4.3",
+    "busboy": "^1.6.0",
+    "compression": "1.7.4",
+    "cookie-parser": "1.4.6",
+    "cors": "2.8.5",
+    "dicer": "^0.3.1",
+    "dotenv": "10.0.0",
+    "envalid": "7.2.2",
+    "express": "^4.18.2",
+    "express-validator": "6.14.0",
+    "helmet": "4.6.0",
+    "hpp": "0.2.3",
+    "jsonwebtoken": "^9.0.0",
+    "mongoose": "^6.11.1",
+    "multer": "^1.4.5-lts.1",
+    "nodemailer": "6.7.2",
+    "path": "^0.12.7",
+    "pino": "7.6.0",
+    "pino-http": "6.5.0",
+    "uuid": "8.3.2"
+  },
+  "devDependencies": {
+    "eslint": "8.5.0",
+    "eslint-config-airbnb-base": "15.0.0",
+    "eslint-config-prettier": "8.3.0",
+    "eslint-plugin-import": "2.25.3",
+    "eslint-plugin-prettier": "4.0.0",
+    "husky": "7.0.4",
+    "lint-staged": "12.1.3",
+    "pino-pretty": "7.3.0",
+    "prettier": "2.5.1"
+  }
+}
