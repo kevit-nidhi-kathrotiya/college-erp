@@ -1,19 +1,19 @@
-import path from 'path';
-import Config from '../../environment/index.js';
 import HttpException from '../../utils/error.utils.js';
 import { createNewUser, findUserById, userFindByIdAndUpdate, deleteUserById } from './user.DAL.js';
 import { USER_ERROR_CODES } from './user.errors.js';
 import { User } from './user.model.js';
 
-const uploadPath = path.resolve('media/');
 
 class UsersController {
-    /**
-     * Sign up new user and send mail to them
+    
+    /** In all functions below paraeters are same
      * @param {Request} req => Express Request
      * @param {Response} res => Express Repponse
      * @param {NextFunction} next => Express next function
      */
+    
+    
+    /** Sign up new user and send mail to them */
     async signUpUser(req, res, next) {
         try {
             // Getting data from body and creating new user
@@ -34,12 +34,7 @@ class UsersController {
         }
     }
 
-    /**
-     * Sign in user with credentials
-     * @param {Request} req => Express Request
-     * @param {Response} res => Express Repponse
-     * @param {NextFunction} next => Express next function
-     */
+    /**Sign in user with email and password - generate token for session*/
     async signInUser(req, res, next) {
         try {
             // Validating body data
@@ -66,12 +61,7 @@ class UsersController {
         }
     }
 
-    /**
-     * Get user profile of logged in user
-     * @param {Request} req => Express Request
-     * @param {Response} res => Express Repponse
-     * @param {NextFunction} next => Express next function
-     */
+    /** Get user profile of logged in user */
     async getUsers(req, res, next) {
         try {
             // Get user data of logIn user
@@ -84,8 +74,12 @@ class UsersController {
         }
     }
 
+    /** only admin can delete user by _id */
     async deleteUser(req, res, next){
         try{
+            if (req.user.role !== 'admin'){
+                throw new HttpException(400, USER_ERROR_CODES.ADMIN_RIGHTS_ONLY, 'ADMIN_RIGHTS_ONLY', null);
+            }
             const user = await deleteUserById(req.params.id)
             return res.status(200).json(user);
         }catch(err){
@@ -93,8 +87,12 @@ class UsersController {
         }
     }
 
+    /**only admin can update user data by id */
     async updateUser(req, res, next){
         try{
+            if (req.user.role !== 'admin'){
+                throw new HttpException(400, USER_ERROR_CODES.ADMIN_RIGHTS_ONLY, 'ADMIN_RIGHTS_ONLY', null);
+            }
             const user = await userFindByIdAndUpdate(req.params.id, req.body)
             return res.status(200).json(user);
 
@@ -103,6 +101,7 @@ class UsersController {
         }
     }
 
+    /**Signout current user - delete token*/
     async signOutUser(req, res, next){
         try{
             req.user.accessToken = ""

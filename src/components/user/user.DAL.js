@@ -20,7 +20,6 @@ export async function findUserById(userId) {
 
 export async function userFindByIdAndUpdate(userId, updateObj) {
     try {
-        console.log(userId, updateObj);
         return await User.findByIdAndUpdate(userId, updateObj, { new: true }).lean();
     } catch (err) {
         throw new HttpException(500, USER_ERROR_CODES.UPDATE_USER_UNHANDLED_IN_DB, 'UPDATE_USER_UNHANDLED_IN_DB', err);

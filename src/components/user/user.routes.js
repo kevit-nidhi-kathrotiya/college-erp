@@ -17,21 +17,27 @@ class UsersRoute {
 
     initializeRoutes() {
         // No Auth router
-        // this.router.post(`${this.path}`, validateRequestMiddleware(signUpUserSchema), this.userController.signUpUser);
+        // Signup User
         this.router.post(`${this.path}`, this.userController.signUpUser);
 
+        //Signin user
         this.router.post(
             `${this.path}/signIn`,
             this.userController.signInUser,
         );
 
         // Auth Router
+
+        // get user information
         this.router.get(`${this.path}/me`, authenticateMiddleware.authorize, this.userController.getUsers);
 
+        //delete user
         this.router.delete(`${this.path}/:id`, authenticateMiddleware.authorize, this.userController.deleteUser);
         
+        // update user
         this.router.patch(`${this.path}/:id`, authenticateMiddleware.authorize, this.userController.updateUser);
         
+        // signOut user
         this.router.post(`${this.path}/signOut`, authenticateMiddleware.authorize, this.userController.signOutUser);
     }
 }

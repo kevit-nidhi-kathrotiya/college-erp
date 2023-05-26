@@ -11,49 +11,80 @@ const { Schema, model } = mongoose;
 // ----------------------------------------------------------------------------
 const studentSchema = new Schema({
     name: {
-        type: Schema.Types.String,
+        type: String,
         required: true,
     },
-    emailId: Schema.Types.String,
+    emailId: String,
 
     mobileNo: {
-        type:Schema.Types.String,
-        require : true,
+        type:String,
+        required : true,
+        unique : true
     },
 
     department : {
-        type: Schema.Types.String,
-        require: true,
+        type: String,
+        required: true,
+        enum: ['CE','IT','ME','EC','EE']
     },
 
     batch: {
-        type: Schema.Types.Number,
-        require: true,
+        type: mongoose.Schema.Types.ObjectId,
+        required: true,
+        ref: 'batch'
+    },
+
+    currentSem:{
+        type: Number,
+        required: true
     },
     accessToken: Schema.Types.String,
-});
+},{ timestamps: true });
 
 const attendanceSchema = new Schema({
+    year:{
+        type: Number,
+        required : true,
+        ref: 'batches',
+    },
+    
+    branch: {
+        type: String,
+        required: true
+    },
+    
+    semester: {
+        type: Number,
+        required: true
+    },
+    
     date:{
         type: Date,
-        require: true,
+        required: true,
     },
         
-    attendance:[{
-        student_id:{
-            type: mongoose.Schema.Types.ObjectId,
-            required : true,
-            ref: 'Student'
-        },
-        value:{
-            type:String,
-            enum: ['A','P'],
+    students: [
+        {
+          isPresent: {
+            type: Boolean,
             required: true,
-            default: 'A'
-        }
-    }],
+          },
+          studentId: {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: "students",
+          },
+        },
+      ],
+},{ timestamps: true });
+
+studentSchema.index({ email : 1 }, { unique: true });
+
+var batchSchema = new Schema({
+    strict: false
+}, {
+    collection: 'batches'
 });
 
-studentSchema.index({ emailId: 1 }, { unique: true });
 export const Student = model('student', studentSchema);
-export const StudentAttendance = model('student-attendance', attendanceSchema);
+export const StudentAttendance = model('attendance', attendanceSchema);
+export const Batch = mongoose.model('batch', batchSchema);

@@ -26,10 +26,11 @@ export const signUpUserSchema = {
     },
     emailId: {
         isEmail: true,
-        errorMessage: 'Plaese enter valid email',
+        errorMessage: 'Please enter valid email',
     },
     role: {
         isIn: ['admin','staff'],
+        isString: true,
         errorMessage: 'Invalid role value.',
     },
     mobileNo: {
@@ -67,20 +68,20 @@ export const signInUserSchema = {
 // ----------------------------------------------------------------------------
 const userSchema = new Schema({
     firstName: {
-        type: Schema.Types.String,
+        type: String,
         required: true,
     },
-    lastName: Schema.Types.String,
-    emailId: Schema.Types.String,
+    lastName: String,
+    emailId: String,
     role: {
-        type: Schema.Types.String,
-        enum: ["admin","staff"],
+        type: String,
+        enum: ['admin','staff'],
         required: true,
     },
-    mobileNo: Schema.Types.String,
-    password: { type: Schema.Types.String, required: true },
-    accessToken: Schema.Types.String,
-    profilePicture: Schema.Types.String,
+    mobileNo: String,
+    password: { type: String, required: true },
+    accessToken: String,
+    profilePicture: String,
 });
 
 // --------------------------------------------------------------------------------------------------
@@ -94,8 +95,6 @@ userSchema.statics.findByCredentials = async function (email, password) {
         });
     }
 
-    console.log(password);
-    // const res = await bcryptjs.compare(password,String(user.password).trim());   
     const res = await bcryptjs.compare(password,user.password);
 
     if (res === true) {

@@ -1,20 +1,12 @@
 import HttpException from '../../utils/error.utils.js';
 import { STUDENT_ERROR_CODES } from './student.errors.js';
-import { Student, StudentAttendance } from './student.model.js';
+import { Student, StudentAttendance, Batch } from './student.model.js';
 
 export async function createNewStudent(studentBody) {
     try {
         return await Student.create(studentBody);
     } catch (err) {
         throw new HttpException(500, STUDENT_ERROR_CODES.CREATE_STUDENT_UNHANDLED_IN_DB, 'CREATE_STUDENT_UNHANDLED_IN_DB', err);
-    }
-}
-
-export async function findStudentById(studentId) {
-    try {
-        return await Student.findById(studentId).lean();
-    } catch (err) {
-        throw new HttpException(500, STUDENT_ERROR_CODES.STUDENT_NOT_FOUND, 'STUDENT_NOT_FOUND', err);
     }
 }
 
@@ -34,26 +26,26 @@ export async function deleteStudentById(studentId) {
     }
 }
 
-export async function getAll(){
+export async function batchAggregate(agg){
     try{
-        return await Student.find({}).lean();
+        return await Batch.aggregate(agg);
     }catch(err){
-        throw new HttpException(500,STUDENT_ERROR_CODES.GETALL_STUDENT_UNHANDLED_IN_DB,'GETALL_STUDENT_UNHANDLED_IN_DB',err);
+        throw new HttpException(500,STUDENT_ERROR_CODES.STUDENT_AGG_UNHANDLED_IN_DB,'STUDENT_AGG_UNHANDLED_IN_DB',err);
     }
 }
 
-export async function addAttendanceData(attendanceData){
+export async function attandanceAggregate(agg){
     try{
-        return await StudentAttendance.create(attendanceData);
+        return await StudentAttendance.aggregate(agg);
     }catch(err){
-        throw new HttpException(500,STUDENT_ERROR_CODES.ADDATT_STUDENT_UNHANDLED_IN_DB,'ADDATT_STUDENT_UNHANDLED_IN_DB',err);
+        throw new HttpException(500,STUDENT_ERROR_CODES.ATT_STUDENT_AGG_UNHANDLED_IN_DB,'ATT_STUDENT_AGG_UNHANDLED_IN_DB',err);
     }
 }
 
-export async function findByDate(date){
+export async function countDocs(filterData){
     try{
-        return await StudentAttendance.find({date});
+        return await StudentAttendance.countDocuments(filterData)
     }catch(err){
-        throw new HttpException(500,STUDENT_ERROR_CODES.ADDATT_DATE_UNHANDLED_IN_DB,'ADDATT_DATE_UNHANDLED_IN_DB',err);
+        throw new HttpException(500,STUDENT_ERROR_CODES.STUDENT_COUNTDOC_UNHANDLED_IN_DB,'STUDENT_COUNTDOC_UNHANDLED_IN_DB',err);
     }
 }

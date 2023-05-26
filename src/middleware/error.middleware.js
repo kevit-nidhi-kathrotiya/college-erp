@@ -40,8 +40,10 @@ export const errorMiddleware = (err, req, res, next) => {
 
 export function validateRequestMiddleware(schema) {
     return async (req, res, next) => {
+        debugger
         await checkSchema(schema).run(req);
         const errors = validationResult(req);
+        console.log(errors);
         if (!errors.isEmpty()) {
             next(
                 new HttpException(400, 'Middleware validation fail', 'MIDDLWARE_VALIDATION_ERROR', null, {
