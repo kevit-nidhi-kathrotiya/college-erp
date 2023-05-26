@@ -6,7 +6,9 @@
   "main": "index.js",
   "scripts": {
     "start": "nodemon src/server.js",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "format": "npx prettier --write \"src/**/*.js\"",
+    "lint": "npx eslint \"{src,apps,libs,test}/**/*.js\" --fix"
   },
   "author": "",
   "license": "ISC",

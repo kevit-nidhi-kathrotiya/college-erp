@@ -1,9 +1,9 @@
-import bcryptjs from 'bcryptjs';
-import jwt from 'jsonwebtoken';
-import mongoose from 'mongoose';
-import Config from '../../environment/index.js';
-import HttpException from '../../utils/error.utils.js';
-import { USER_ERROR_CODES } from './user.errors.js';
+import bcryptjs from "bcryptjs";
+import jwt from "jsonwebtoken";
+import mongoose from "mongoose";
+import Config from "../../environment/index.js";
+import HttpException from "../../utils/error.utils.js";
+import { USER_ERROR_CODES } from "./user.errors.js";
 
 const { Schema, model } = mongoose;
 
@@ -17,34 +17,34 @@ const { Schema, model } = mongoose;
  * @path /users
  */
 export const signUpUserSchema = {
-    firstName: {
-        errorMessage: 'First name is required in request',
-        isString: true,
-        isLength: {
-            options: { min: 3 },
-        },
+  firstName: {
+    errorMessage: "First name is required in request",
+    isString: true,
+    isLength: {
+      options: { min: 3 },
     },
-    emailId: {
-        isEmail: true,
-        errorMessage: 'Please enter valid email',
+  },
+  emailId: {
+    isEmail: true,
+    errorMessage: "Please enter valid email",
+  },
+  role: {
+    isIn: ["admin", "staff"],
+    isString: true,
+    errorMessage: "Invalid role value.",
+  },
+  mobileNo: {
+    isMobilePhone: true,
+    errorMessage: "Please enter valid Phone Number",
+  },
+  password: {
+    isStrongPassword: true,
+    isLength: {
+      options: {
+        min: 8,
+      },
     },
-    role: {
-        isIn: ['admin','staff'],
-        isString: true,
-        errorMessage: 'Invalid role value.',
-    },
-    mobileNo: {
-        isMobilePhone: true,
-        errorMessage: 'Please enter valid Phone Number',
-    },
-    password: {
-        isStrongPassword: true,
-        isLength: {
-            options: {
-                min: 8,
-            },
-        },
-    },
+  },
 };
 
 /**
@@ -53,108 +53,129 @@ export const signUpUserSchema = {
  * @path /users/signIn
  */
 export const signInUserSchema = {
-    email: {
-        isEmail: true,
-        errorMessage: 'Enter valid email Id',
-    },
-    password: {
-        isString: true,
-        errorMessage: 'Enter valid password',
-    },
+  email: {
+    isEmail: true,
+    errorMessage: "Enter valid email Id",
+  },
+  password: {
+    isString: true,
+    errorMessage: "Enter valid password",
+  },
 };
 
 // ----------------------------------------------------------------------------
 // User Schema for store in DB
 // ----------------------------------------------------------------------------
 const userSchema = new Schema({
-    firstName: {
-        type: String,
-        required: true,
-    },
-    lastName: String,
-    emailId: String,
-    role: {
-        type: String,
-        enum: ['admin','staff'],
-        required: true,
-    },
-    mobileNo: String,
-    password: { type: String, required: true },
-    accessToken: String,
-    profilePicture: String,
+  firstName: {
+    type: String,
+    required: true,
+  },
+  lastName: String,
+  emailId: String,
+  role: {
+    type: String,
+    enum: ["admin", "staff"],
+    required: true,
+  },
+  mobileNo: String,
+  password: { type: String, required: true },
+  accessToken: String,
+  profilePicture: String,
 });
 
 // --------------------------------------------------------------------------------------------------
 // User's statics methods
 // --------------------------------------------------------------------------------------------------
 userSchema.statics.findByCredentials = async function (email, password) {
-    const user = await this.findOne({ emailId: email });
-    if (!user) {
-        throw new HttpException(404, USER_ERROR_CODES.USER_NOT_FOUND, 'USER_NOT_FOUND', null, {
-            emailId: email,
-        });
-    }
+  const user = await this.findOne({ emailId: email });
+  if (!user) {
+    throw new HttpException(
+      404,
+      USER_ERROR_CODES.USER_NOT_FOUND,
+      "USER_NOT_FOUND",
+      null,
+      {
+        emailId: email,
+      }
+    );
+  }
 
-    const res = await bcryptjs.compare(password,user.password);
+  const res = await bcryptjs.compare(password, user.password);
 
-    if (res === true) {
-        return user;
-    }
-    throw new HttpException(404, USER_ERROR_CODES.INCORRECT_PASSWORD, 'INCORRECT_PASSWORD', null);
+  if (res === true) {
+    return user;
+  }
+  throw new HttpException(
+    404,
+    USER_ERROR_CODES.INCORRECT_PASSWORD,
+    "INCORRECT_PASSWORD",
+    null
+  );
 };
 
 userSchema.statics.findByToken = async function (token) {
-    let decoded;
-    try {
-        decoded = jwt.verify(token, Config.JWT_PUBLIC_KEY);
-    } catch (err) {
-        let hasSessionExpired = false;
-        if (err && err.message && err.message.includes('jwt expired')) {
-            hasSessionExpired = true;
-        }
-        if (hasSessionExpired) {
-            throw new HttpException(404, USER_ERROR_CODES.USER_SESSION_EXPIRED, 'USER_SESSION_EXPIRED', null);
-        } else {
-            throw new HttpException(404, USER_ERROR_CODES.AUTH_FAILED, 'AUTH_FAILED', null);
-        }
+  let decoded;
+  try {
+    decoded = jwt.verify(token, Config.JWT_PUBLIC_KEY);
+  } catch (err) {
+    let hasSessionExpired = false;
+    if (err && err.message && err.message.includes("jwt expired")) {
+      hasSessionExpired = true;
     }
-    return this.findOne({
-        _id: decoded._id,
-        accessToken: token,
-    });
+    if (hasSessionExpired) {
+      throw new HttpException(
+        404,
+        USER_ERROR_CODES.USER_SESSION_EXPIRED,
+        "USER_SESSION_EXPIRED",
+        null
+      );
+    } else {
+      throw new HttpException(
+        404,
+        USER_ERROR_CODES.AUTH_FAILED,
+        "AUTH_FAILED",
+        null
+      );
+    }
+  }
+  return this.findOne({
+    _id: decoded._id,
+    accessToken: token,
+  });
 };
 
 // --------------------------------------------------------------------------------
 // User's general methods
 // --------------------------------------------------------------------------------
 userSchema.methods.getAuthToken = function () {
-    // "this" here refers to User doc
-    const access = 'auth';
-    const token = jwt
-        .sign({ _id: this._id.toHexString(), access }, Config.JWT_PRIVATE_KEY, {
-            expiresIn: '3d', // 3 days
-            algorithm: 'RS256',
-        })
-        .toString();
+  // "this" here refers to User doc
+  const access = "auth";
+  const token = jwt
+    .sign({ _id: this._id.toHexString(), access }, Config.JWT_PRIVATE_KEY, {
+      expiresIn: "3d", // 3 days
+      algorithm: "RS256",
+    })
+    .toString();
 
-    this.accessToken = token;
+  this.accessToken = token;
 
-    return this.save().then(() => token);
+  return this.save().then(() => token);
 };
 
 // --------------------------------------------------------------------------------
 // User's hooks (pre & post)
 // --------------------------------------------------------------------------------
-userSchema.pre('save', async function (next) {
-    const user = this;
-    if ((user.password && !user.accessToken) || user.isModified('password')) {
-        user.password = await bcryptjs.hash(user.password,8);
-        next();
-    } else {
-        next();
-    }
+userSchema.pre("save", async function (next) {
+  const user = this;
+  if ((user.password && !user.accessToken) || user.isModified("password")) {
+    user.password = await bcryptjs.hash(user.password, 8);
+    next();
+  } else {
+    next();
+  }
 });
 
 userSchema.index({ emailId: 1 }, { unique: true });
-export const User = model('user', userSchema);
+export const User = model("user", userSchema);
 export default User;

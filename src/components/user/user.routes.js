@@ -1,45 +1,58 @@
-import { Router } from 'express';
-import { authenticateMiddleware } from '../../middleware/authentication.middleware.js';
-import { validateRequestMiddleware } from '../../middleware/error.middleware.js';
-import UserController from './user.controller.js';
-import { signInUserSchema, signUpUserSchema } from './user.model.js';
+import { Router } from "express";
+import { authenticateMiddleware } from "../../middleware/authentication.middleware.js";
+import { validateRequestMiddleware } from "../../middleware/error.middleware.js";
+import UserController from "./user.controller.js";
+import { signInUserSchema, signUpUserSchema } from "./user.model.js";
 
 class UsersRoute {
-    path = '/users';
+  path = "/users";
 
-    router = Router();
+  router = Router();
 
-    userController = new UserController();
+  userController = new UserController();
 
-    constructor() {
-        this.initializeRoutes();
-    }
+  constructor() {
+    this.initializeRoutes();
+  }
 
-    initializeRoutes() {
-        // No Auth router
-        // Signup User
-        this.router.post(`${this.path}`, this.userController.signUpUser);
+  initializeRoutes() {
+    // No Auth router
+    // Signup User
+    this.router.post(`${this.path}`, this.userController.signUpUser);
 
-        //Signin user
-        this.router.post(
-            `${this.path}/signIn`,
-            this.userController.signInUser,
-        );
+    // Signin user
+    this.router.post(`${this.path}/signIn`, this.userController.signInUser);
 
-        // Auth Router
+    // Auth Router
 
-        // get user information
-        this.router.get(`${this.path}/me`, authenticateMiddleware.authorize, this.userController.getUsers);
+    // get user information
+    this.router.get(
+      `${this.path}/me`,
+      authenticateMiddleware.authorize,
+      this.userController.getUsers
+    );
 
-        //delete user
-        this.router.delete(`${this.path}/:id`, authenticateMiddleware.authorize, this.userController.deleteUser);
-        
-        // update user
-        this.router.patch(`${this.path}/:id`, authenticateMiddleware.authorize, this.userController.updateUser);
-        
-        // signOut user
-        this.router.post(`${this.path}/signOut`, authenticateMiddleware.authorize, this.userController.signOutUser);
-    }
+    // delete user
+    this.router.delete(
+      `${this.path}/:id`,
+      authenticateMiddleware.authorize,
+      this.userController.deleteUser
+    );
+
+    // update user
+    this.router.patch(
+      `${this.path}/:id`,
+      authenticateMiddleware.authorize,
+      this.userController.updateUser
+    );
+
+    // signOut user
+    this.router.post(
+      `${this.path}/signOut`,
+      authenticateMiddleware.authorize,
+      this.userController.signOutUser
+    );
+  }
 }
 
 export default UsersRoute;
