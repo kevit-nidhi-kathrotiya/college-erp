@@ -40,7 +40,6 @@ export const errorMiddleware = (err, req, res, next) => {
 
 export function validateRequestMiddleware(schema) {
     return async (req, res, next) => {
-        debugger
         await checkSchema(schema).run(req);
         const errors = validationResult(req);
         console.log(errors);
