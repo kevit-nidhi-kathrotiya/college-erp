@@ -61,9 +61,10 @@ class App {
       express.urlencoded({ extended: false, limit: BODY_PAYLOAD_LIMIT })
     );
     this.app.use(
+      //Cross-Origin Resource Sharing
       cors({
         origin: true,
-        methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+        methods: ["GET", "POST", "PUT", "DELETE", "PATCH","OPTIONS"],
         allowedHeaders: [
           "Origin",
           " X-Requested-With",

@@ -1,4 +1,4 @@
-import bcryptjs from "bcryptjs";
+import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import mongoose from "mongoose";
 import Config from "../../environment/index.js";
@@ -29,7 +29,10 @@ export const signUpUserSchema = {
     errorMessage: "Please enter valid email",
   },
   role: {
-    isIn: ["admin", "staff"],
+    matches: {
+      options: [/\b(?:admin|staff)\b/],
+      errorMessage: "Invalid role"
+    },
     isString: true,
     errorMessage: "Invalid role value.",
   },
@@ -100,8 +103,9 @@ userSchema.statics.findByCredentials = async function (email, password) {
       }
     );
   }
-
-  const res = await bcryptjs.compare(password, user.password);
+  console.log(user);
+  //const res = await bcryptjs.compare(password, user.password);
+  const res = await bcrypt.compare(password, user.password);
 
   if (res === true) {
     return user;
@@ -168,8 +172,8 @@ userSchema.methods.getAuthToken = function () {
 // --------------------------------------------------------------------------------
 userSchema.pre("save", async function (next) {
   const user = this;
-  if ((user.password && !user.accessToken) || user.isModified("password")) {
-    user.password = await bcryptjs.hash(user.password, 8);
+  if ((user.password && !user.accessToken) && user.isModified("password")) {
+    user.password = await bcrypt.hash(user.password, 8);
     next();
   } else {
     next();

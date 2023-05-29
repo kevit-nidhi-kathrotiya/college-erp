@@ -17,11 +17,12 @@ class UsersRoute {
 
   initializeRoutes() {
     // No Auth router
+    
     // Signup User
-    this.router.post(`${this.path}`, this.userController.signUpUser);
+    this.router.post(`${this.path}`,validateRequestMiddleware(signUpUserSchema),this.userController.signUpUser);
 
     // Signin user
-    this.router.post(`${this.path}/signIn`, this.userController.signInUser);
+    this.router.post(`${this.path}/signIn`, validateRequestMiddleware(signInUserSchema),this.userController.signInUser);
 
     // Auth Router
 
