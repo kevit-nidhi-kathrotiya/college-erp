@@ -45,7 +45,7 @@ export async function userFindByIdAndUpdate(userId, updateObj) {
 
 export async function deleteUserById(userId) {
   try {
-    return await User.deleteOne({ _id: userId }, { new: true }).lean();
+    return await User.deleteOne({ _id: userId });
   } catch (err) {
     throw new HttpException(
       500,

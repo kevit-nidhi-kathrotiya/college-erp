@@ -32,7 +32,7 @@ export async function studentFindByIdAndUpdate(studentId, updateObj) {
 
 export async function deleteStudentById(studentId) {
   try {
-    return await Student.deleteOne({ _id: studentId }, { new: true }).lean();
+    return await Student.deleteOne({ _id: studentId });
   } catch (err) {
     throw new HttpException(
       500,

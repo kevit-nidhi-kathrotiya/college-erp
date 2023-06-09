@@ -83,8 +83,7 @@ const userSchema = new Schema({
   },
   mobileNo: String,
   password: { type: String, required: true },
-  accessToken: String,
-  profilePicture: String,
+  accessToken: String
 });
 
 // --------------------------------------------------------------------------------------------------
@@ -103,8 +102,6 @@ userSchema.statics.findByCredentials = async function (email, password) {
       }
     );
   }
-  console.log(user);
-  //const res = await bcryptjs.compare(password, user.password);
   const res = await bcrypt.compare(password, user.password);
 
   if (res === true) {
